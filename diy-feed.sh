@@ -6,7 +6,10 @@
 # See /LICENSE for more information.
 
 # Uncomment a feed source
-sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
+# sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
+
+# 添加luci-lib-fs
+#echo "src-git corelabs https://github.com/core-labs/openwrt-feeds.git" >> feeds.conf.default
 
 # Add a feed source
 # sed -i '$a src-git lienol https://github.com/Lienol/openwrt-package' feeds.conf.default
