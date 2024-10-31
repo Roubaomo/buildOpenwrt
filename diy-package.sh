@@ -6,8 +6,8 @@
 # Blog: https://p3terx.com
 #=================================================
 #luci-theme-argon 
-rm -rf feeds/luci/themes/luci-theme-argon  
-git clone -b master https://github.com/jerrykuku/luci-theme-argon.git feeds/luci/themes/luci-theme-argon 
+#rm -rf feeds/luci/themes/luci-theme-argon  
+#git clone -b master https://github.com/jerrykuku/luci-theme-argon.git feeds/luci/themes/luci-theme-argon 
 
 #kernel-graphics
 #ver=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | cut -d '=' -f2)
