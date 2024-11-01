@@ -14,24 +14,24 @@ sed -i '/NAS/d' feeds/luci/applications/luci-app-vsftpd/luasrc/controller/vsftpd
 sed -i 's/nas/services/g' feeds/luci/applications/luci-app-vsftpd/luasrc/controller/vsftpd.lua
 sed -i 's/nas/services/g' feeds/luci/applications/luci-app-vsftpd/luasrc/model/cbi/vsftpd/item.lua
 sed -i 's/nas/services/g' feeds/luci/applications/luci-app-vsftpd/luasrc/model/cbi/vsftpd/users.lua
-sed -i 's/msgid "NAS"//g' feeds/luci/applications/luci-app-vsftpd/po/zh-cn/vsftpd.po
-sed -i 's/msgstr "网络存储"//g' feeds/luci/applications/luci-app-vsftpd/po/zh-cn/vsftpd.po
-sed -i 's/msgstr "FTP 服务器"/msgstr "FTP设置"/g' feeds/luci/applications/luci-app-vsftpd/po/zh-cn/vsftpd.po
+sed -i 's/msgid "NAS"//g' feeds/luci/applications/luci-app-vsftpd/po/zh_Hans/vsftpd.po
+sed -i 's/msgstr "网络存储"//g' feeds/luci/applications/luci-app-vsftpd/po/zh_Hans/vsftpd.po
+sed -i 's/msgstr "FTP 服务器"/msgstr "FTP设置"/g' feeds/luci/applications/luci-app-vsftpd/po/zh_Hans/vsftpd.po
 
 #luci-app-vlmcsd
-sed -i 's/KMS 服务器/微软激活/g' feeds/luci/applications/luci-app-vlmcsd/po/zh-cn/vlmcsd.po
+sed -i 's/KMS 服务器/微软激活/g' feeds/luci/applications/luci-app-vlmcsd/po/zh_Hans/vlmcsd.po
 
 #luci-app-dockerman
-sed -i '/Docker - Container (%s)/{n;s/""/"Docker-容器"/g}' feeds/luci/applications/luci-app-dockerman/po/zh-cn/dockerman.po
-sed -i '/Docker - Container/{n;s/""/"Docker-容器"/g}' feeds/luci/applications/luci-app-dockerman/po/zh-cn/dockerman.po
-sed -i '/Docker - Images/{n;s/""/"Docker-镜像"/g}' feeds/luci/applications/luci-app-dockerman/po/zh-cn/dockerman.po
-sed -i '/Docker - Network/{n;s/""/"Docker-网络"/g}' feeds/luci/applications/luci-app-dockerman/po/zh-cn/dockerman.po
-sed -i '/Docker - Networks/{n;s/""/"Docker-网络"/g}' feeds/luci/applications/luci-app-dockerman/po/zh-cn/dockerman.po
-sed -i '/Docker - Overview/{n;s/""/"Docker-概览"/g}' feeds/luci/applications/luci-app-dockerman/po/zh-cn/dockerman.po
-sed -i '/Docker - Volumes/{n;s/""/"Docker-存储"/g}' feeds/luci/applications/luci-app-dockerman/po/zh-cn/dockerman.po
-sed -i 's/存储卷/存储/g' feeds/luci/applications/luci-app-dockerman/po/zh-cn/dockerman.po
-sed -i 's/存储卷/存储/g' feeds/luci/applications/luci-app-dockerman/po/zh-cn/dockerman.po
-sed -i 's/msgstr "Docker"/msgstr "容器"/g' feeds/luci/applications/luci-app-dockerman/po/zh-cn/dockerman.po
+sed -i '/Docker - Container (%s)/{n;s/""/"Docker-容器"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+sed -i '/Docker - Container/{n;s/""/"Docker-容器"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+sed -i '/Docker - Images/{n;s/""/"Docker-镜像"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+sed -i '/Docker - Network/{n;s/""/"Docker-网络"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+sed -i '/Docker - Networks/{n;s/""/"Docker-网络"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+sed -i '/Docker - Overview/{n;s/""/"Docker-概览"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+sed -i '/Docker - Volumes/{n;s/""/"Docker-存储"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+sed -i 's/存储卷/存储/g' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+sed -i 's/存储卷/存储/g' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+sed -i 's/msgstr "Docker"/msgstr "容器"/g' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
 
 #luci-app-udpxy
 sed -i 's/udpxy"))/组播转发"))/g' feeds/luci/applications/luci-app-udpxy/luasrc/controller/udpxy.lua
