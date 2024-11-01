@@ -8,10 +8,6 @@ on:
         description: 'SSH连接Actions'
         required: false
         default: 'false'
-      commit_id:
-        description: '使用指定Commit ID'
-        required: false
-        default: ''
       cache_toolchain:
         description: '启用Cache缓存Toolchain'
         required: false
@@ -32,6 +28,10 @@ on:
         description: '使用的OpenWrt源码地址'
         required: false
         default: 'https://github.com/coolsnowwolf/lede'
+      commit_id:
+        description: '使用源码特定Commit ID'
+        required: false
+        default: ''
         
 env:
   REPO_URL: ${{ inputs.repo_url || 'https://github.com/coolsnowwolf/lede' }}
@@ -52,6 +52,7 @@ jobs:
 
     steps:
     - name: "Optimize Disk Space"
+      if: github.event.inputs.ssh != 'true'
       uses: "hugoalh/disk-space-optimizer-ghaction@v0.8.1"
       with:
         operate_sudo: "True"
@@ -97,7 +98,7 @@ jobs:
     - name: "Checkout"
       uses: actions/checkout@main
       with:
-        ref: main
+        ref: ${{ env.FILE_NAME }}
       
     - name: "Clone Source Code"
       working-directory: ./
@@ -119,7 +120,7 @@ jobs:
         echo "DEVICE_SUBTARGET=$DEVICE_SUBTARGET" >> $GITHUB_ENV
         
     - name: "Cache Toolchain"
-      if: github.event.inputs.cache_toolchain == 'true'
+      if: github.event.inputs.cache_toolchain == 'true' && github.event.inputs.ssh != 'true'
       uses: HiGarfield/cachewrtbuild@main
       with:
         ccache: false
