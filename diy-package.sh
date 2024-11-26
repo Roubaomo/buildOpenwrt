@@ -22,16 +22,16 @@ sed -i 's/msgstr "FTP 服务器"/msgstr "FTP设置"/g' feeds/luci/applications/l
 sed -i 's/KMS 服务器/微软激活/g' feeds/luci/applications/luci-app-vlmcsd/po/zh_Hans/vlmcsd.po
 
 #luci-app-dockerman
-sed -i '/Docker - Container (%s)/{n;s/""/"Docker-容器"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
-sed -i '/Docker - Container/{n;s/""/"Docker-容器"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
-sed -i '/Docker - Images/{n;s/""/"Docker-镜像"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
-sed -i '/Docker - Network/{n;s/""/"Docker-网络"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
-sed -i '/Docker - Networks/{n;s/""/"Docker-网络"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
-sed -i '/Docker - Overview/{n;s/""/"Docker-概览"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
-sed -i '/Docker - Volumes/{n;s/""/"Docker-存储"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
-sed -i 's/存储卷/存储/g' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
-sed -i 's/存储卷/存储/g' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
-sed -i 's/msgstr "Docker"/msgstr "容器"/g' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+#sed -i '/Docker - Container (%s)/{n;s/""/"Docker-容器"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+#sed -i '/Docker - Container/{n;s/""/"Docker-容器"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+#sed -i '/Docker - Images/{n;s/""/"Docker-镜像"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+#sed -i '/Docker - Network/{n;s/""/"Docker-网络"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+#sed -i '/Docker - Networks/{n;s/""/"Docker-网络"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+#sed -i '/Docker - Overview/{n;s/""/"Docker-概览"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+#sed -i '/Docker - Volumes/{n;s/""/"Docker-存储"/g}' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+#sed -i 's/存储卷/存储/g' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+#sed -i 's/存储卷/存储/g' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
+#sed -i 's/msgstr "Docker"/msgstr "容器"/g' feeds/luci/applications/luci-app-dockerman/po/zh_Hans/dockerman.po
 
 #luci-app-udpxy
 sed -i 's/udpxy"))/组播转发"))/g' feeds/luci/applications/luci-app-udpxy/luasrc/controller/udpxy.lua
@@ -46,7 +46,7 @@ sed -i 's/Nice increment/优先级增量/g' feeds/luci/applications/luci-app-udp
 sed -i 's/Multicast subscription renew/组播订阅续订/g' feeds/luci/applications/luci-app-udpxy/luasrc/model/cbi/udpxy.lua
 
 #luci-app-ssr
-sed -i 's/ShadowSocksR Plus+/翻墙工具/g' feeds/helloworld/luci-app-ssr-plus/luasrc/controller/shadowsocksr.lua 
+#sed -i 's/ShadowSocksR Plus+/翻墙工具/g' feeds/helloworld/luci-app-ssr-plus/luasrc/controller/shadowsocksr.lua 
 
 #kernel-graphics
 ver=$(cat target/linux/x86/Makefile | grep KERNEL_PATCHVER | cut -d '=' -f2)
