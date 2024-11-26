@@ -4,8 +4,11 @@
 # Lisence: MIT
 # Author: P3TERX
 # Blog: https://p3terx.com
-#=================================================
-#luci-theme-argon 
+#=================================================#luci-theme-argon 
+
+# Modify default IP
+sed -i 's/192.168.1.1/192.168.11.44/g' package/base-files/files/bin/config_generate
+
 rm -rf feeds/luci/themes/luci-theme-argon  
 git clone -b master https://github.com/jerrykuku/luci-theme-argon.git feeds/luci/themes/luci-theme-argon 
 
