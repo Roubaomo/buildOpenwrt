@@ -5,14 +5,16 @@
 #=================================================
 
 # ===== 引入 ImmortalWrt 的 fail2ban（LEDE/openwrt 官方源无此包）=====
-# 本脚本在 openwrt 源码根目录内执行；幂等，重复执行不重拉
-if [ ! -d package/fail2ban ]; then
+# 注意：该包 Makefile 用相对路径 include ../../lang/python/python3-package.mk，
+# 必须放进 feeds/packages/net/ 保持 feed 布局（拷到树内 package/ 会因路径断裂编译失败）
+if [ ! -d feeds/packages/net/fail2ban ]; then
     rm -rf /tmp/immortalwrt-pkgs
     git clone --depth 1 --filter=blob:none --sparse https://github.com/immortalwrt/packages.git /tmp/immortalwrt-pkgs
     git -C /tmp/immortalwrt-pkgs sparse-checkout set net/fail2ban
-    cp -r /tmp/immortalwrt-pkgs/net/fail2ban package/
+    cp -r /tmp/immortalwrt-pkgs/net/fail2ban feeds/packages/net/
     rm -rf /tmp/immortalwrt-pkgs
-    echo "fail2ban package imported from immortalwrt/packages"
+    ./scripts/feeds install fail2ban
+    echo "fail2ban package imported into feeds and installed"
 fi
 
 # ===== vsftpd 菜单汉化修补（沿用原仓库定制）=====
