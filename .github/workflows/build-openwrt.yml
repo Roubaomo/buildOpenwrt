@@ -131,7 +131,7 @@ jobs:
         echo "DEVICE_SUBTARGET=$DEVICE_SUBTARGET" >> $GITHUB_ENV
         
     - name: "Cache Toolchain"
-      if: github.event.inputs.cache_toolchain == 'true' && github.event.inputs.ssh != 'true'
+      if: (github.event_name != 'workflow_dispatch' || github.event.inputs.cache_toolchain == 'true') && github.event.inputs.ssh != 'true'
       uses: HiGarfield/cachewrtbuild@main
       with:
         ccache: false
