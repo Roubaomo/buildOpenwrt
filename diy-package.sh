@@ -13,6 +13,21 @@ if [ ! -d feeds/packages/net/fail2ban ]; then
     git -C /tmp/immortalwrt-pkgs sparse-checkout set net/fail2ban
     cp -r /tmp/immortalwrt-pkgs/net/fail2ban feeds/packages/net/
     rm -rf /tmp/immortalwrt-pkgs
+    # fail2ban 1.1.0 的 setup.py 用了已被新版 setuptools 移除的 test_suite 关键字，
+    # LEDE master 的 host setuptools 过新会报 AttributeError: check_test_suite，
+    # 加 patch 删掉该行（ImmortalWrt 能编是因其 setuptools 版本旧）
+    cat > feeds/packages/net/fail2ban/patches/030-remove-test-suite.patch <<'PATCH_EOF'
+--- a/setup.py
++++ b/setup.py
+@@ -171,7 +171,6 @@
+ 
+ if setuptools:
+ 	setup_extra = {
+-		'test_suite': "fail2ban.tests.utils.gatherTests",
+ 	}
+ else:
+ 	setup_extra = {}
+PATCH_EOF
     # 重建该 feed 索引：feeds update -a 时 fail2ban 还不存在，index 里没有，
     # 不重建则 install 找不到包、CONFIG_PACKAGE_fail2ban 被静默丢弃
     ./scripts/feeds update -i packages
