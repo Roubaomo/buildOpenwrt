@@ -13,6 +13,9 @@ if [ ! -d feeds/packages/net/fail2ban ]; then
     git -C /tmp/immortalwrt-pkgs sparse-checkout set net/fail2ban
     cp -r /tmp/immortalwrt-pkgs/net/fail2ban feeds/packages/net/
     rm -rf /tmp/immortalwrt-pkgs
+    # 重建该 feed 索引：feeds update -a 时 fail2ban 还不存在，index 里没有，
+    # 不重建则 install 找不到包、CONFIG_PACKAGE_fail2ban 被静默丢弃
+    ./scripts/feeds update -i packages
     ./scripts/feeds install fail2ban
     echo "fail2ban package imported into feeds and installed"
 fi
