@@ -46,7 +46,7 @@ env:
   DIY_FEED_SH: diy-feed.sh
   DIY_PACKAGE_SH: diy-package.sh
   TZ: Asia/Shanghai
-  COMMIT_ID: ${{ inputs.commit_id || '' }}
+  COMMIT_ID: ${{ inputs.commit_id || 'ff6b739d41cd' }}
 
 jobs:
   build:
