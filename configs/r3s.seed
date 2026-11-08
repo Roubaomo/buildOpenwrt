@@ -1,24 +1,28 @@
 # ============================================================
-# LEDE x86_64 通用基础镜像（参照 newop-2g-clean.img 包构成）
-# 平台: x86/64 generic（PVE KVM SeaBIOS + GRUB 可直启）
-# 格式: combined-ext4 GPT，rootfs 2G，gzip 压缩
-# 精简: 不含 passwall/科学上网，不含 netname MAC 绑定
-# 说明: 本文件为 seed，Actions 里 make defconfig 自动展开补依赖
+# LEDE R3S 基础镜像（与 x86.seed 同源，差异仅 target/网卡驱动）
+# 平台: rockchip/armv8
+# 格式: ext4，rootfs 2G，gzip 压缩
 # ============================================================
 
 # ---------- 目标平台 ----------
 CONFIG_HAVE_DOT_CONFIG=y
-CONFIG_TARGET_x86=y
-CONFIG_TARGET_x86_64=y
-CONFIG_TARGET_x86_64_DEVICE_generic=y
+CONFIG_TARGET_rockchip=y
+CONFIG_TARGET_rockchip_armv8=y
+CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyarm_nanopi-r3s=y
+CONFIG_TARGET_BOARD="rockchip"
+CONFIG_TARGET_SUBTARGET="armv8"
 
 # ---------- 镜像格式 ----------
 CONFIG_TARGET_ROOTFS_EXT4FS=y
 # CONFIG_TARGET_ROOTFS_SQUASHFS is not set
 CONFIG_TARGET_ROOTFS_PARTSIZE=2048
 CONFIG_TARGET_IMAGES_GZIP=y
-CONFIG_GRUB_IMAGES=y
-CONFIG_GRUB_TIMEOUT="3"
+
+# ---------- 镜像格式 ----------
+CONFIG_TARGET_ROOTFS_EXT4FS=y
+# CONFIG_TARGET_ROOTFS_SQUASHFS is not set
+CONFIG_TARGET_ROOTFS_PARTSIZE=2048
+CONFIG_TARGET_IMAGES_GZIP=y
 
 # ---------- 基础工具（照搬 newop） ----------
 CONFIG_PACKAGE_bash=y
@@ -51,7 +55,6 @@ CONFIG_PACKAGE_rsyslog=y
 CONFIG_PACKAGE_logrotate=y
 CONFIG_PACKAGE_ip-tiny=y
 CONFIG_PACKAGE_sysfsutils=y
-CONFIG_PACKAGE_grub2-bios-setup=y
 
 # ---------- lean 功能集（newop 同源） ----------
 CONFIG_PACKAGE_autocore=y
@@ -108,22 +111,12 @@ CONFIG_PACKAGE_python3-pkg-resources=y
 CONFIG_PACKAGE_python3-sqlite3=y
 CONFIG_PACKAGE_python3-urllib=y
 
-# ---------- 网卡 / 虚拟化驱动 ----------
-# 物理直通卡（I226-V/I225 等 Intel 系）
-CONFIG_PACKAGE_kmod-e1000=y
-CONFIG_PACKAGE_kmod-e1000e=y
-CONFIG_PACKAGE_kmod-igb=y
-CONFIG_PACKAGE_kmod-igbvf=y
-CONFIG_PACKAGE_kmod-igc=y
-# KVM virtio（LEDE x86_64 内核已内建，此处冗余保险）
-CONFIG_PACKAGE_kmod-virtio-net=y
-CONFIG_PACKAGE_kmod-virtio-blk=y
-# Realtek 实体机网卡（通用镜像必带）+ NVMe 块设备保险
-CONFIG_PACKAGE_kmod-r8169=y
-CONFIG_PACKAGE_kmod-nvme=y
+# ---------- 网卡驱动 ----------
 # 文件系统
 CONFIG_PACKAGE_kmod-fs-ext4=y
 CONFIG_PACKAGE_kmod-fs-vfat=y
 CONFIG_PACKAGE_kmod-fs-ntfs3=y
 CONFIG_PACKAGE_kmod-fs-btrfs=y
 CONFIG_PACKAGE_kmod-fs-exfat=y
+# 板载网卡
+CONFIG_PACKAGE_kmod-usb-net-rtl8152=y

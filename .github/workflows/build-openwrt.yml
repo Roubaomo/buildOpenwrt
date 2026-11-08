@@ -6,8 +6,12 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
+      devices:
+        description: '编译设备: x86/r2s/r3s/h28k/all'
+        required: false
+        default: 'x86'
       ssh:
-        description: 'SSH连接Actions'
+        description: 'SSH连接Actions(仅x86)'
         required: false
         default: 'false'
       cache_toolchain:
@@ -39,18 +43,23 @@ env:
   REPO_URL: ${{ inputs.repo_url || 'https://github.com/coolsnowwolf/lede' }}
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: .config
   DIY_FEED_SH: diy-feed.sh
   DIY_PACKAGE_SH: diy-package.sh
   TZ: Asia/Shanghai
   COMMIT_ID: ${{ inputs.commit_id || '' }}
-  FILE_NAME: main
 
 jobs:
   build:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        device: ${{ fromJSON(github.event_name == 'push' && '["x86"]' || (github.event.inputs.devices == 'all' && '["x86","r2s","r3s","h28k"]' || format('["{0}"]', github.event.inputs.devices || 'x86'))) }}
+    env:
+      CONFIG_FILE: configs/${{ matrix.device }}.seed
+      FILE_NAME: ${{ matrix.device }}
 
     steps:
     - name: "Optimize Disk Space"
@@ -96,12 +105,12 @@ jobs:
         /usr/local/share/powershell /usr/local/share/chromium /usr/local/lib/node_modules
         sudo timedatectl set-timezone "$TZ"
         sudo chown $USER:$GROUPS $GITHUB_WORKSPACE
- 
+
     - name: "Checkout"
       uses: actions/checkout@main
       with:
-        ref: ${{ env.FILE_NAME }}
-      
+        ref: main
+
     - name: "Clone Source Code"
       working-directory: ./
       run: |
@@ -116,9 +125,9 @@ jobs:
       run: |
         SOURCE_REPO="$(echo $REPO_URL | awk -F '/' '{print $(NF)}')"
         echo "SOURCE_REPO=$SOURCE_REPO" >> $GITHUB_ENV
-        DEVICE_TARGET=$([ -e $CONFIG_FILE ] && cat $CONFIG_FILE | grep CONFIG_TARGET_BOARD | awk -F '"' '{print $2}' || echo "x86")
+        DEVICE_TARGET=$(grep CONFIG_TARGET_BOARD $CONFIG_FILE | awk -F '"' '{print $2}')
         echo "DEVICE_TARGET=$DEVICE_TARGET" >> $GITHUB_ENV
-        DEVICE_SUBTARGET=$([ -e $CONFIG_FILE ] && cat $CONFIG_FILE | grep CONFIG_TARGET_SUBTARGET | awk -F '"' '{print $2}' || echo "64")
+        DEVICE_SUBTARGET=$(grep CONFIG_TARGET_SUBTARGET $CONFIG_FILE | awk -F '"' '{print $2}')
         echo "DEVICE_SUBTARGET=$DEVICE_SUBTARGET" >> $GITHUB_ENV
         
     - name: "Cache Toolchain"
@@ -126,7 +135,7 @@ jobs:
       uses: HiGarfield/cachewrtbuild@main
       with:
         ccache: false
-        mixkey: ${{ env.SOURCE_REPO }}-${{ env.REPO_BRANCH }}-${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}
+        mixkey: ${{ env.SOURCE_REPO }}-${{ env.REPO_BRANCH }}-${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}-${{ matrix.device }}
         prefix: 'openwrt'
 
     - name: "Load Custom Feed"
@@ -142,10 +151,10 @@ jobs:
         ./scripts/feeds install -a
 
     - name: "SSH Connection to Actions"
-      if: github.event.inputs.ssh == 'true'
+      if: github.event.inputs.ssh == 'true' && matrix.device == 'x86'
       run: |
         rm -f openwrt/.config*
-        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        [ -e $CONFIG_FILE ] && cp $CONFIG_FILE openwrt/.config
         chmod +x tools/tmate.sh
         chmod +x tools/runSSH.sh
         # Install tmate on macOS or Ubuntu
@@ -159,11 +168,11 @@ jobs:
             exit 1
         fi
         bash tools/runSSH.sh
-      
-    - name: Commit and Push .config File
-      if: github.event.inputs.ssh == 'true'
+
+    - name: "Commit and Push .config File"
+      if: github.event.inputs.ssh == 'true' && matrix.device == 'x86'
       run: |
-        [ -e openwrt/.config ] && mv openwrt/.config $CONFIG_FILE
+        [ -e openwrt/.config ] && cp openwrt/.config $CONFIG_FILE
         git config --global user.email 'action@github.com'
         git config --global user.name ${{ github.actor }}
         git add $CONFIG_FILE
@@ -183,6 +192,7 @@ jobs:
       if: github.event.inputs.ssh != 'true'
       run: |
         cd openwrt
+        [ -e $GITHUB_WORKSPACE/$CONFIG_FILE ] && cp $GITHUB_WORKSPACE/$CONFIG_FILE .config
         make defconfig
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
@@ -220,14 +230,14 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.compile.outputs.status == 'success' && github.event.inputs.upload_packages == 'true' && !cancelled()
       with:
-        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        name: OpenWrt_bin_${{ matrix.device }}${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: openwrt/packages/
 
     - name: "Upload Firmware to Action"
       uses: actions/upload-artifact@v4.3.6
       if: steps.compile.outputs.status == 'success' && github.event.inputs.upload_action == 'true' && !cancelled()
       with:
-        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        name: OpenWrt_firmware_${{ matrix.device }}${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: openwrt/firmware/
 
     - name: "Upload Firmware to Releases"
@@ -247,6 +257,7 @@ jobs:
           
     - name: "Remove Old Releases"
       uses: dev-drprasad/delete-older-releases@v0.3.4
+      if: matrix.device == 'x86'
       with:
         keep_latest: 3
         delete_tags: true
