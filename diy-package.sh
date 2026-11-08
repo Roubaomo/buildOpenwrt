@@ -35,6 +35,17 @@ PATCH_EOF
     echo "fail2ban package imported into feeds and installed"
 fi
 
+# ===== 把 host setuptools 钉回 68.2.2（openwrt 23.05 官方验证版本）=====
+# LEDE master 自带 84.x，已移除 test_suite 关键字支持，fail2ban 1.1.0 编译必挂
+# （AttributeError: check_test_suite）。68.2.2 是 python3.11 黄金搭档，仅影响编译期，
+# 不影响路由器运行时的 python3。版本与 hash 来自 openwrt 23.05 官方分支。
+ST_MK=feeds/packages/lang/python/python-setuptools/Makefile
+if grep -q "PKG_VERSION:=84" $ST_MK 2>/dev/null; then
+    sed -i "s/^PKG_VERSION:=.*/PKG_VERSION:=68.2.2/" $ST_MK
+    sed -i "s/^PKG_HASH:=.*/PKG_HASH:=4ac1475276d2f1c48684874089fefcd83bd7162ddaafb81fac866ba0db282a87/" $ST_MK
+    echo "host setuptools pinned to 68.2.2"
+fi
+
 # ===== vsftpd 菜单汉化修补（沿用原仓库定制）=====
 sed -i '/NAS/d' feeds/luci/applications/luci-app-vsftpd/luasrc/controller/vsftpd.lua
 sed -i 's/nas/services/g' feeds/luci/applications/luci-app-vsftpd/luasrc/controller/vsftpd.lua
