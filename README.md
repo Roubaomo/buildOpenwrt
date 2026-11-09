@@ -74,6 +74,39 @@ opkg update && opkg install <包名>
 
 无网络环境也可直接 `opkg install /opt/packages/**/xxx.ipk`。
 
+### 从 GitHub Release 获取匹配的包仓
+
+本项目暂不维护独立的在线软件仓，也不会在固件中写入私人域名。LEDE 软件包随对应设备的 GitHub Release 一起发布，使用前请确认：
+
+- 固件和 `packages-<device>.tar.gz` 来自同一个 Release；
+- `<device>` 与设备型号一致；
+- 不要把 x86、R2S、R3S、H28K 的包仓混用；
+- 不要把 LEDE 包仓与 ImmortalWrt 官方包仓混用；
+- 安装 `kmod-*` 前尤其要确认内核版本和 ABI 匹配。
+
+示例（请把 URL 替换为对应 Release 的真实下载地址）：
+
+```bash
+mkdir -p /tmp/lede-packages
+cd /tmp/lede-packages
+wget -O packages-x86.tar.gz \
+  https://github.com/Roubaomo/buildOpenwrt/releases/download/<release-tag>/packages-x86.tar.gz
+sha256sum packages-x86.tar.gz
+# 与同一 Release 的 sha256sums 文件核对后再解压
+mkdir -p /opt/packages
+tar xzf packages-x86.tar.gz -C /opt/packages
+
+for f in "" base luci packages helloworld; do
+  echo "src/gz my$f file:///opt/packages/$f" >> /etc/opkg/customfeeds.conf
+done
+opkg update
+opkg install <包名>
+```
+
+如果设备可以访问 GitHub，也可以将压缩包解压到设备本地；如果设备无法直接下载大文件，先在电脑或 NAS 下载并校验，再通过 SCP/U 盘传入。不要直接使用网上其他 OpenWrt/LEDE 源替代本项目包仓。
+
+**Fork 安全说明**：Fork 项目可以自行编译和发布自己的固件/包仓，但本仓库不会自动把包上传到第三方服务器，也不会把任何私有部署地址、SSH 凭据或部署密钥写入 workflow。未来如增加自动部署，应只允许原仓库受保护的 `main` 分支执行，并将部署凭据放在 GitHub Environment Secrets 中。
+
 ## 如何编译
 
 - **push 到 main** → 自动编译 x86（日常迭代用）
