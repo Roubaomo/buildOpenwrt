@@ -25,12 +25,28 @@
 - PPPoE / IPv6 全支持
 
 **不包含**（刻意精简）：
-- passwall2 等科学上网前端（只带 xray-core 核心，前端自选）
+- passwall2 等科学上网前端（只带 xray-core 核心，前端自选；xray-core 出自 helloworld feed——LEDE 默认启用的科学上网包合集源，distfeeds 中官方源的 helloworld 条目并不存在，已在镜像内清理）
 - fail2ban（LEDE 源无此包且 python 构建框架不兼容，装好系统后离线搬 ipk 即可，纯 python 跨发行版可跑）
 - ddns / acme（按需 docker 部署，如 ddns-go 容器）
 - 任何预烧网络配置
 
 **初始状态**：LAN `192.168.1.1`（静态，eth0），root 密码为空，首登 LuCI 或 SSH 后自行设置。
+
+## 软件安装（opkg）
+
+本固件内核与包均为自编译，**官方 opkg 源与本固件不兼容**（kmod 因内核版本不符无法安装，普通包有依赖冲突风险），镜像内 `/etc/opkg/distfeeds.conf` 已默认禁用全部官方源。
+
+安装软件请使用 Release 中的 **`packages-<device>.tar.gz`**（与本镜像同批编译的全套 ipk + 索引，内核/ABI 完全匹配）：
+
+```bash
+tar xzf packages-x86.tar.gz -C /opt
+for f in "" base luci packages helloworld; do
+  echo "src/gz my$f file:///opt/packages/$f" >> /etc/opkg/customfeeds.conf
+done
+opkg update && opkg install <包名>
+```
+
+无网络环境也可直接 `opkg install /opt/packages/**/xxx.ipk`。
 
 ## 如何编译
 

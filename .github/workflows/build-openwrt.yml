@@ -219,9 +219,11 @@ jobs:
       run: |
         mkdir -p openwrt/packages
         mkdir -p openwrt/firmware
-        mv openwrt/bin/targets/*/*/packages/* openwrt/packages/
+        mv openwrt/bin/targets/*/*/packages/* openwrt/packages/ || true
+        mv openwrt/bin/packages/*/* openwrt/packages/ || true
         rm -rf openwrt/bin/targets/*/*/packages
         mv openwrt/bin/targets/*/*/* openwrt/firmware/
+        tar czf openwrt/packages-${{ matrix.device }}.tar.gz -C openwrt packages/
         useVersionInfo=$(git show -s --date=short --format="提交人: %an<br/>提交时间: %cd<br/>提交内容: %s<br/>commit hash: %H")
         echo "useVersionInfo=$useVersionInfo" >> $GITHUB_ENV
         echo "DATE=$(date "+%Y%m%d%H%M")" >> $GITHUB_ENV
@@ -250,7 +252,9 @@ jobs:
         removeArtifacts: true
         tag: ${{ env.DATE }}_${{ env.FILE_NAME }}
         token: ${{ secrets.GITHUB_TOKEN }}
-        artifacts: openwrt/firmware/*
+        artifacts: |
+          openwrt/firmware/*
+          openwrt/packages-${{ matrix.device }}.tar.gz
         body: |
           #### 源码最近提交信息:
           - ${{ env.useVersionInfo }}
