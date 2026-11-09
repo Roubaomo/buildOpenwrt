@@ -24,6 +24,27 @@
 | 特点 | 最新硬件驱动，滚动快照 | 版本锚定、官方安全更新、**fail2ban/7z 原生内置** |
 | H28K | ✓ | ✗（ImmortalWrt 未支持该设备） |
 
+### `-imm` 版的软件安装与加速
+
+`-imm` 固件的 opkg 已默认指向官方源，设备上直接：
+
+```bash
+opkg update && opkg install <包名>     # kmod 亦可（同源编译，vermagic 一致）
+```
+
+官方源在国内可能较慢，换国内镜像（中科大/北大，二选一）：
+
+```bash
+sed -i 's|downloads.immortalwrt.org|mirrors.ustc.edu.cn/immortalwrt|g' /etc/opkg/distfeeds.conf
+opkg update
+```
+
+官方资源：
+- 源码：https://github.com/immortalwrt/immortalwrt
+- 官方包仓（本固件对应）：https://downloads.immortalwrt.org/releases/24.10.6/
+- 官网/文档：https://immortalwrt.org
+- 固件选择器（官方原版固件）：https://firmware-selector.immortalwrt.org
+
 ## 镜像内容
 
 **包含**：
