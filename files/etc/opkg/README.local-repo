@@ -1,0 +1,17 @@
+LEDE 自编译固件 opkg 说明
+========================
+
+/etc/opkg/distfeeds.conf 默认仅保留一条官方源（内核 6.18 与官方源 6.6 不匹配：
+kmod 无法安装，纯用户态软件自担风险）。如需完全禁用，清空该文件即可。
+
+推荐安装软件方式 —— 使用 Release 中与本镜像同批编译的 packages-<device>.tar.gz：
+
+  tar xzf packages-x86.tar.gz -C /opt
+  echo "src/gz mykmod file:///opt/packages"       >> /etc/opkg/customfeeds.conf
+  echo "src/gz mybase file:///opt/packages/base"    >> /etc/opkg/customfeeds.conf
+  echo "src/gz myluci file:///opt/packages/luci"    >> /etc/opkg/customfeeds.conf
+  echo "src/gz mypkgs file:///opt/packages/packages" >> /etc/opkg/customfeeds.conf
+  echo "src/gz myhello file:///opt/packages/helloworld" >> /etc/opkg/customfeeds.conf
+  opkg update && opkg install <包名>
+
+无网络时也可直接：opkg install /opt/packages/**/xxx.ipk
