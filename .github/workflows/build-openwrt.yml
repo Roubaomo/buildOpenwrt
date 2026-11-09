@@ -30,12 +30,8 @@ on:
         description: '上传Packages到Action'
         required: false
         default: 'false'
-      repo_url:
-        description: '使用的OpenWrt源码地址'
-        required: false
-        default: 'https://github.com/coolsnowwolf/lede'
       commit_id:
-        description: '使用源码特定Commit ID'
+        description: 'LEDE源码commit(留空用锚定; imm源固定v24.10.6不受此参数影响)'
         required: false
         default: ''
         
