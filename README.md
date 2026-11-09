@@ -1,6 +1,6 @@
-# buildOpenwrt — LEDE 多设备云编译
+# buildOpenwrt — OpenWrt 多设备云编译（LEDE / ImmortalWrt 双源）
 
-基于 GitHub Actions 的 OpenWrt（Lean's LEDE）自动编译仓库，产出 x86 虚拟机 + ARM 软路由一体化的**通用基础镜像**。
+基于 GitHub Actions 的 OpenWrt 自动编译仓库：一套流水线、两种源码（LEDE 与 ImmortalWrt）、七种设备产物，x86 虚拟机 + ARM 软路由通吃的**通用基础镜像**。
 
 ## 支持设备
 
