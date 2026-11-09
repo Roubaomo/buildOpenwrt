@@ -98,12 +98,15 @@ opkg update && opkg install <包名>
 
 ```
 gunzip openwrt-x86-64-generic-ext4-combined.img.gz
-qm create <VMID> --name openwrt --memory 1024 --cores 2 \
+qm create <VMID> --name openwrt --memory 1024 --cores 2 --machine q35 --ostype l26 \
+  --scsihw virtio-scsi-single \
   --net0 virtio,bridge=<隔离桥> --net1 virtio,bridge=<上级网络桥>
 qm disk import <VMID> openwrt-...-combined.img <存储名> --target-disk scsi0
 qm set <VMID> --scsi0 <存储名>:vm-<VMID>-disk-0 --boot order=scsi0
 qm start <VMID>
 ```
+
+⚠️ `--scsihw virtio-scsi-single` 必须显式指定：PVE 默认给 LSI Logic 控制器，本固件无该驱动会 kernel panic（黑屏不起）。用 virtio0 总线亦可。
 
 ⚠️ **重要：eth0 默认是 LAN（192.168.1.1）且自带 DHCP 服务**。第一块网卡（net0）**不要直接接在正在使用的网络里**——它会向该二层广播 DHCP 应答，干扰现有网络。正确做法：
 - `net0`（eth0/LAN）→ 接一个空桥/隔离网络（PVE 新建一个不绑物理口的桥即可）
