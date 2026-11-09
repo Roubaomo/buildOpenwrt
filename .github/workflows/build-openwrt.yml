@@ -40,13 +40,10 @@ on:
         default: ''
         
 env:
-  REPO_URL: ${{ inputs.repo_url || 'https://github.com/coolsnowwolf/lede' }}
-  REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   DIY_FEED_SH: diy-feed.sh
   DIY_PACKAGE_SH: diy-package.sh
   TZ: Asia/Shanghai
-  COMMIT_ID: ${{ inputs.commit_id || 'ff6b739d41cd' }}
 
 jobs:
   build:
@@ -56,10 +53,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        device: ${{ fromJSON(github.event_name == 'push' && '["x86"]' || (github.event.inputs.devices == 'all' && '["x86","r2s","r3s","h28k"]' || format('["{0}"]', github.event.inputs.devices || 'x86'))) }}
+        device: ${{ fromJSON(github.event_name == 'push' && '["x86"]' || (github.event.inputs.devices == 'all' && '["x86","r2s","r3s","h28k","x86-imm","r2s-imm","r3s-imm"]' || format('["{0}"]', github.event.inputs.devices || 'x86'))) }}
     env:
       CONFIG_FILE: configs/${{ matrix.device }}.seed
       FILE_NAME: ${{ matrix.device }}
+      # 双源：-imm 后缀走 ImmortalWrt 官方分支（opkg 官方源直连），其余走 LEDE master（锚定）
+      REPO_URL: ${{ contains(matrix.device, '-imm') && 'https://github.com/immortalwrt/immortalwrt' || 'https://github.com/coolsnowwolf/lede' }}
+      REPO_BRANCH: ${{ contains(matrix.device, '-imm') && 'openwrt-24.10' || 'master' }}
+      COMMIT_ID: ${{ contains(matrix.device, '-imm') && 'v24.10.6' || inputs.commit_id || 'ff6b739d41cd' }}
 
     steps:
     - name: "Optimize Disk Space"
@@ -140,7 +141,9 @@ jobs:
 
     - name: "Load Custom Feed"
       run: |
-        [ -e files ] && mv files openwrt/files
+        if [[ "$FILE_NAME" != *-imm ]]; then
+          [ -e files ] && mv files openwrt/files
+        fi
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_FEED_SH
         chmod +x $DIY_PACKAGE_SH

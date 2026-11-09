@@ -11,7 +11,18 @@
 | NanoPi R3S | `configs/r3s.seed` | `*-nanopi-r3s-ext4-sysupgrade.img.gz` | 写 SD 卡 / dd 进 eMMC |
 | HinLink H28K | `configs/h28k.seed` | `*-opc-h28k-ext4-sysupgrade.img.gz` | 写 SD 卡 / dd 进 eMMC |
 
-`configs/*.seed` 为精简 seed 配置（约百行），编译时 `make defconfig` 自动展开补全依赖。四份 seed 同源，差异仅 target 与网卡驱动。
+`configs/*.seed` 为精简 seed 配置（约百行），编译时 `make defconfig` 自动展开补全依赖。
+
+## 双源体系（`-imm` 后缀）
+
+同名设备提供两套固件，按需选用：
+
+| | LEDE 版（x86/r2s/r3s/h28k） | ImmortalWrt 版（x86-imm/r2s-imm/r3s-imm） |
+|---|---|---|
+| 源码 | LEDE master（锚定 commit，内核 6.18） | ImmortalWrt **v24.10.6 官方 tag**（内核 6.6） |
+| opkg 官方源直连 | ❌（用 Release 自带 packages-*.tar.gz 本地源） | ✅ downloads.immortalwrt.org 直连 |
+| 特点 | 最新硬件驱动，滚动快照 | 版本锚定、官方安全更新、**fail2ban/7z 原生内置** |
+| H28K | ✓ | ✗（ImmortalWrt 未支持该设备） |
 
 ## 镜像内容
 

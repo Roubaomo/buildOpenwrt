@@ -1,0 +1,115 @@
+# ============================================================
+# ImmortalWrt v24.10.6 R3S（官方源兼容版：opkg 直连 downloads.immortalwrt.org）
+# 平台: rockchip/armv8
+# 格式: ext4，rootfs 2G，gzip 压缩
+# ============================================================
+
+# ---------- 目标平台 ----------
+CONFIG_HAVE_DOT_CONFIG=y
+CONFIG_TARGET_rockchip=y
+CONFIG_TARGET_rockchip_armv8=y
+CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyarm_nanopi-r3s=y
+CONFIG_TARGET_BOARD="rockchip"
+CONFIG_TARGET_SUBTARGET="armv8"
+
+# ---------- 镜像格式 ----------
+CONFIG_TARGET_ROOTFS_EXT4FS=y
+# CONFIG_TARGET_ROOTFS_SQUASHFS is not set
+CONFIG_TARGET_ROOTFS_PARTSIZE=2048
+CONFIG_TARGET_IMAGES_GZIP=y
+
+# ---------- 镜像格式 ----------
+CONFIG_TARGET_ROOTFS_EXT4FS=y
+# CONFIG_TARGET_ROOTFS_SQUASHFS is not set
+CONFIG_TARGET_ROOTFS_PARTSIZE=2048
+CONFIG_TARGET_IMAGES_GZIP=y
+
+# ---------- 基础工具（照搬 newop） ----------
+CONFIG_PACKAGE_bash=y
+CONFIG_PACKAGE_coreutils=y
+CONFIG_PACKAGE_coreutils-base64=y
+CONFIG_PACKAGE_curl=y
+CONFIG_PACKAGE_wget=y
+CONFIG_PACKAGE_wget-ssl=y
+CONFIG_PACKAGE_ca-bundle=y
+CONFIG_PACKAGE_ca-certificates=y
+CONFIG_PACKAGE_openssl-util=y
+CONFIG_PACKAGE_openssh-sftp-server=y
+CONFIG_PACKAGE_fdisk=y
+CONFIG_PACKAGE_lsblk=y
+CONFIG_PACKAGE_blkid=y
+CONFIG_PACKAGE_parted=y
+CONFIG_PACKAGE_partx-utils=y
+CONFIG_PACKAGE_e2fsprogs=y
+CONFIG_PACKAGE_mkf2fs=y
+CONFIG_PACKAGE_ntfs3-mount=y
+CONFIG_PACKAGE_btrfs-progs=y
+CONFIG_PACKAGE_7z=y
+CONFIG_PACKAGE_xz=y
+CONFIG_PACKAGE_tar=y
+CONFIG_PACKAGE_jq=y
+CONFIG_PACKAGE_ethtool=y
+CONFIG_PACKAGE_lm-sensors=y
+CONFIG_PACKAGE_smartmontools=y
+CONFIG_PACKAGE_socat=y
+CONFIG_PACKAGE_rsyslog=y
+CONFIG_PACKAGE_logrotate=y
+CONFIG_PACKAGE_ip-tiny=y
+CONFIG_PACKAGE_sysfsutils=y
+
+# ---------- LuCI + Argon 主题 ----------
+CONFIG_PACKAGE_luci=y
+CONFIG_PACKAGE_luci-compat=y
+CONFIG_PACKAGE_luci-lua-runtime=y
+CONFIG_PACKAGE_luci-theme-argon=y
+CONFIG_PACKAGE_luci-app-argon-config=y
+CONFIG_PACKAGE_luci-app-arpbind=y
+CONFIG_PACKAGE_luci-app-autoreboot=y
+CONFIG_PACKAGE_luci-app-diskman=y
+CONFIG_PACKAGE_luci-app-vsftpd=y
+CONFIG_PACKAGE_vsftpd=y
+CONFIG_PACKAGE_luci-proto-ppp=y
+CONFIG_PACKAGE_luci-proto-ipv6=y
+
+# ---------- 中文化 ----------
+CONFIG_PACKAGE_luci-i18n-base-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-argon-config-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-firewall-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-opkg-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-arpbind-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-autoreboot-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-diskman-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-vsftpd-zh-cn=y
+
+# ---------- fail2ban + python3（ImmortalWrt 原生包） ----------
+CONFIG_PACKAGE_fail2ban=y
+CONFIG_PACKAGE_python3-base=y
+CONFIG_PACKAGE_python3-light=y
+CONFIG_PACKAGE_python3-ctypes=y
+CONFIG_PACKAGE_python3-email=y
+CONFIG_PACKAGE_python3-logging=y
+CONFIG_PACKAGE_python3-pkg-resources=y
+CONFIG_PACKAGE_python3-sqlite3=y
+CONFIG_PACKAGE_python3-urllib=y
+
+# ---------- 科学上网核心（有机会建节点用） ----------
+CONFIG_PACKAGE_xray-core=y
+
+# ---------- Docker（命令行 + LuCI 网页管理 dockerman） ----------
+CONFIG_PACKAGE_docker=y
+CONFIG_PACKAGE_docker-compose=y
+CONFIG_PACKAGE_luci-app-dockerman=y
+CONFIG_PACKAGE_luci-i18n-dockerman-zh-cn=y
+CONFIG_PACKAGE_kmod-tun=y
+CONFIG_PACKAGE_kmod-veth=y
+CONFIG_PACKAGE_kmod-br-netfilter=y
+
+# ---------- 网卡驱动 ----------
+# 文件系统
+CONFIG_PACKAGE_kmod-fs-ext4=y
+CONFIG_PACKAGE_kmod-fs-vfat=y
+CONFIG_PACKAGE_kmod-fs-ntfs3=y
+CONFIG_PACKAGE_kmod-fs-btrfs=y
+CONFIG_PACKAGE_kmod-fs-exfat=y
+# 板载网卡
+CONFIG_PACKAGE_kmod-usb-net-rtl8152=y
