@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       devices:
-        description: '编译设备: x86/r2s/r3s/h28k/all'
+        description: '设备名：x86/r2s/r3s/h28k/all（x86/r2s/r3s 为 ImmortalWrt，h28k 为 LEDE）'
         required: false
         default: 'x86'
       ssh:
@@ -49,11 +49,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        device: ${{ fromJSON(github.event_name == 'push' && '["x86"]' || (github.event.inputs.devices == 'all' && '["x86","r2s","r3s","h28k","x86-imm","r2s-imm","r3s-imm"]' || format('["{0}"]', github.event.inputs.devices || 'x86'))) }}
+        device: ${{ fromJSON(github.event_name == 'push' && '["x86-imm"]' || (github.event.inputs.devices == 'all' && '["x86-imm","r2s-imm","r3s-imm","h28k"]' || format('["{0}"]', github.event.inputs.devices || 'x86-imm'))) }}
     env:
       CONFIG_FILE: configs/${{ matrix.device }}.seed
       FILE_NAME: ${{ matrix.device }}
-      # 双源：-imm 后缀走 ImmortalWrt 官方分支（opkg 官方源直连），其余走 LEDE master（锚定）
+      # 主线：x86/r2s/r3s 使用 ImmortalWrt，H28K 保持 LEDE。
       REPO_URL: ${{ contains(matrix.device, '-imm') && 'https://github.com/immortalwrt/immortalwrt' || 'https://github.com/coolsnowwolf/lede' }}
       REPO_BRANCH: ${{ contains(matrix.device, '-imm') && 'openwrt-24.10' || 'master' }}
       COMMIT_ID: ${{ contains(matrix.device, '-imm') && 'v24.10.6' || inputs.commit_id || 'ff6b739d41cd' }}
