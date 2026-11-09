@@ -10,6 +10,7 @@
 | NanoPi R2S | `configs/r2s.seed` | `*-nanopi-r2s-ext4-sysupgrade.img.gz` | 写 SD 卡 / dd 进 eMMC |
 | NanoPi R3S | `configs/r3s.seed` | `*-nanopi-r3s-ext4-sysupgrade.img.gz` | 写 SD 卡 / dd 进 eMMC |
 | HinLink H28K | `configs/h28k.seed` | `*-opc-h28k-ext4-sysupgrade.img.gz` | 写 SD 卡 / dd 进 eMMC |
+| 上表三台的 ImmortalWrt 版 | `configs/*-imm.seed` | 同名产物（Release 按 `-imm` 后缀区分） | 同上 |
 
 `configs/*.seed` 为精简 seed 配置（约百行），编译时 `make defconfig` 自动展开补全依赖。
 
@@ -19,7 +20,7 @@
 
 | | LEDE 版（x86/r2s/r3s/h28k） | ImmortalWrt 版（x86-imm/r2s-imm/r3s-imm） |
 |---|---|---|
-| 源码 | LEDE master（锚定 commit，内核 6.18） | ImmortalWrt **v24.10.6 官方 tag**（内核 6.6） |
+| 源码 | [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede) master（锚定 commit，内核 6.18） | [immortalwrt/immortalwrt](https://github.com/immortalwrt/immortalwrt) **v24.10.6 官方 tag**（内核 6.6） |
 | opkg 官方源直连 | ❌（用 Release 自带 packages-*.tar.gz 本地源） | ✅ downloads.immortalwrt.org 直连 |
 | 特点 | 最新硬件驱动，滚动快照 | 版本锚定、官方安全更新、**fail2ban/7z 原生内置** |
 | H28K | ✓ | ✗（ImmortalWrt 未支持该设备） |
@@ -57,9 +58,9 @@ opkg update
 
 **初始状态**：LAN `192.168.1.1`（静态，eth0），root 密码为空，首登 LuCI 或 SSH 后自行设置。无任何预烧配置。
 
-## 软件安装（opkg）
+## 软件安装（opkg）—— LEDE 版
 
-本固件内核与包均为自编译，**官方 opkg 源与本固件不兼容**（kmod 因内核版本不符无法安装，普通包有依赖冲突风险），镜像内 `/etc/opkg/distfeeds.conf` 已默认禁用全部官方源。
+LEDE 版内核与包均为自编译，**官方 opkg 源与其不兼容**（kmod 因内核版本不符无法安装，普通包有依赖冲突风险），镜像内 `/etc/opkg/distfeeds.conf` 已默认禁用全部官方源。
 
 安装软件请使用 Release 中的 **`packages-<device>.tar.gz`**（与本镜像同批编译的全套 ipk + 索引，内核/ABI 完全匹配）：
 
@@ -83,7 +84,7 @@ opkg update && opkg install <包名>
 - 编译产物自动发布到 Releases（每设备一个 Release，含 sha256sums 校验与 manifest 包清单）
 - toolchain 已缓存（按设备分 key），日常重编约 1 小时；首编/缓存失效约 3 小时
 
-**源码版本已锚定**：workflow 的 `env.COMMIT_ID` 固定了验证编译通过的 lede master 快照，保证可复现；想跟进上游时手动更新该值（锚点更新建议先单编 x86 验证再 all）。
+**源码版本均已锚定，可复现**：LEDE 版锚定验证编译通过的 master 快照（workflow `COMMIT_ID` 默认值，跟进上游时手动更新，建议先单编 x86 验证）；ImmortalWrt 版固定官方 tag `v24.10.6`（升级时同步改 workflow 与 distfeeds 对应版本号）。
 
 ## 刷机指引
 
@@ -152,9 +153,10 @@ sync && reboot
 ## 仓库结构
 
 ```
-configs/           # 各设备 seed 配置（x86 / r2s / r3s / h28k）
+configs/           # 各设备 seed 配置（x86/r2s/r3s/h28k + 对应 -imm 版，共 7 份）
+files/             # 直写镜像的文件（LEDE 版 opkg distfeeds.conf 禁用官方源）
 diy-package.sh     # 编译期定制：vsftpd/udpxy/vlmcsd 汉化修补等
 diy-feed.sh        # feed 定制（当前为空）
-.github/workflows/ # Actions 流水线（matrix 多设备并行）
+.github/workflows/ # Actions 流水线（双源路由 + matrix 多设备并行）
 tools/             # SSH 调试用（tmate）
 ```
