@@ -10,20 +10,17 @@
 | NanoPi R2S | `configs/r2s.seed` | `*-nanopi-r2s-ext4-sysupgrade.img.gz` | 写 SD 卡 / dd 进 eMMC |
 | NanoPi R3S | `configs/r3s.seed` | `*-nanopi-r3s-ext4-sysupgrade.img.gz` | 写 SD 卡 / dd 进 eMMC |
 | HinLink H28K | `configs/h28k.seed` | `*-opc-h28k-ext4-sysupgrade.img.gz` | 写 SD 卡 / dd 进 eMMC |
-| 上表三台的 ImmortalWrt 主线版 | `configs/*-imm.seed` | Release 中按设备名区分 | 同上 |
 
 `configs/*.seed` 为精简 seed 配置（约百行），编译时 `make defconfig` 自动展开补全依赖。
 
-## 双源体系（`-imm` 后缀）
+## 单源码策略（H28K 例外）
 
-当前主矩阵按设备选择源码：
+当前以 ImmortalWrt v24.10.6 为统一主线，x86/R2S/R3S 使用官方源码和官方 opkg 源；HinLink H28K 尚未获 ImmortalWrt 支持，单独保留 LEDE 锚点构建。这样常用设备的软件包、内核模块和固件同源匹配，避免双套 seed 长期漂移。
 
-| | ImmortalWrt 主线（x86/r2s/r3s） | H28K LEDE 特例 |
+| 设备 | 源码 | 官方 opkg |
 |---|---|---|
-| 源码 | [immortalwrt/immortalwrt](https://github.com/immortalwrt/immortalwrt) **v24.10.6 官方 tag**（内核 6.6） | [coolsnowwolf/lede](https://github.com/coolsnowwolf/lede) master（锚定 commit，内核 6.18） |
-| opkg 官方源直连 | ✅ downloads.immortalwrt.org 直连 | ❌（用 Release 自带 packages-*.tar.gz 本地源） |
-| 特点 | 版本锚定、官方安全更新、官方 opkg 源 | 最新硬件驱动，滚动快照，自建匹配包仓 |
-| H28K | ✗（ImmortalWrt 未支持该设备） | ✓ |
+| x86 / R2S / R3S | [ImmortalWrt](https://github.com/immortalwrt/immortalwrt) v24.10.6 | ✅ downloads.immortalwrt.org |
+| H28K | [LEDE](https://github.com/coolsnowwolf/lede) 锚定 commit | ❌ 使用 Release 包仓 |
 
 ### ImmortalWrt 主线的软件安装与加速
 
@@ -60,26 +57,20 @@ opkg update
 
 ## 软件安装（opkg）—— ImmortalWrt 主线
 
-ImmortalWrt 主线默认使用官方包源。带宽监控和 UPnP IGD/PCP 不预装，需要时按需安装：
+ImmortalWrt 主线默认使用官方包源，常用软件按需安装：
 
 ```bash
 opkg update
-opkg install nlbwmon luci-app-nlbwmon       # 带宽统计（按需）
-opkg install miniupnpd luci-app-upnp        # UPnP IGD/PCP（按需）
-```
-
-当前固件也不预装 fail2ban；如确有需要，可从官方源按需安装：
-
-```bash
-opkg update
-opkg install fail2ban
+opkg install nlbwmon luci-app-nlbwmon       # 带宽统计
+opkg install miniupnpd luci-app-upnp        # UPnP IGD/PCP
+opkg install fail2ban                       # 入侵防护
 ```
 
 ## 软件安装（opkg）—— H28K LEDE 版
 
 LEDE 版内核与包均为自编译，**官方 opkg 源与其不兼容**（kmod 因内核版本不符无法安装，普通包有依赖冲突风险），镜像内 `/etc/opkg/distfeeds.conf` 已默认禁用全部官方源。
 
-安装软件请使用 Release 中的 **`packages-<device>.tar.gz`**（与本镜像同批编译的全套 ipk + 索引，内核/ABI 完全匹配）：
+安装软件请使用 Release 中与设备同名的 **`packages-<device>.tar.gz`**（与固件同批编译的全套 ipk + 索引，内核/ABI 完全匹配）：
 
 ```bash
 tar xzf packages-x86.tar.gz -C /opt
@@ -126,9 +117,9 @@ opkg install <包名>
 
 ## 如何编译
 
-- **push 到 main** → 自动编译 x86-imm（日常迭代用）
+- **push 到 main** → 自动编译 x86（ImmortalWrt，日常迭代用）
 - **手动编译** → Actions → Build OpenWrt → Run workflow → `devices` 填：
-  - 单台：`x86-imm` / `r2s-imm` / `r3s-imm`（ImmortalWrt 主线），或 `h28k`（LEDE 特例）
+  - 单台：`x86` / `r2s` / `r3s`（ImmortalWrt 主线），或 `h28k`（LEDE 特例）
   - 全部四台并行：`all`
 - **只推代码不编译** → 提交信息带 `[skip ci]`
 - 编译产物自动发布到 Releases（每设备一个 Release，含 sha256sums 校验与 manifest 包清单）
@@ -206,8 +197,8 @@ sync && reboot
 ## 仓库结构
 
 ```
-configs/           # 各设备 seed 配置（x86/r2s/r3s 的 -imm 主线 + h28k LEDE 特例，旧 seed 暂保留作迁移回滚）
-files/             # 直写镜像的文件（LEDE 版 opkg distfeeds.conf 禁用官方源）
+configs/           # 当前 seed：ImmortalWrt x86/R2S/R3S + LEDE H28K
+files/             # 直写镜像的文件（仅 H28K LEDE 禁用官方 opkg 源）
 diy-package.sh     # 编译期定制：vsftpd/udpxy/vlmcsd 汉化修补等
 diy-feed.sh        # feed 定制（当前为空）
 .github/workflows/ # Actions 流水线（双源路由 + matrix 多设备并行）
