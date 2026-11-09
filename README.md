@@ -46,24 +46,30 @@
 
 ## 刷机指引
 
-### x86（PVE 场景）
+### x86（PVE / KVM / 实体机）
+
+镜像解压后是完整盘镜像（含 GRUB 引导），三种用法：
+
+**实体机**：`gunzip` 后 dd 写整盘（或 balenaEtcher），BIOS/UEFI 均可启动（另有 `combined-efi` 变体供纯 UEFI 机器）。
+
+**PVE 建虚拟机**（VMID / 存储名 / 桥名按自己环境替换）：
 
 ```
 gunzip openwrt-x86-64-generic-ext4-combined.img.gz
-qm create 106 --name lede-test --memory 1024 --cores 2 \
-  --net0 virtio,bridge=vmbr9 --net1 virtio,bridge=vmbr1
-qm disk import 106 openwrt-...-combined.img local-lvm --target-disk scsi0
-qm set 106 --scsi0 local-lvm:vm-106-disk-0 --boot order=scsi0
-qm start 106
+qm create <VMID> --name openwrt --memory 1024 --cores 2 \
+  --net0 virtio,bridge=<隔离桥> --net1 virtio,bridge=<上级网络桥>
+qm disk import <VMID> openwrt-...-combined.img <存储名> --target-disk scsi0
+qm set <VMID> --scsi0 <存储名>:vm-<VMID>-disk-0 --boot order=scsi0
+qm start <VMID>
 ```
 
-⚠️ **eth0 默认 LAN(192.168.1.1) 且带 DHCP 服务**，net0 绝不能直接挂主网桥（会与主网网关抢答 DHCP）。推荐双网卡：
-- `net0`（eth0/LAN）→ 空桥 vmbr9（隔离）
-- `net1`（eth1/WAN，DHCP 客户端）→ 主网桥，从上级路由拿地址
+⚠️ **重要：eth0 默认是 LAN（192.168.1.1）且自带 DHCP 服务**。第一块网卡（net0）**不要直接接在正在使用的网络里**——它会向该二层广播 DHCP 应答，干扰现有网络。正确做法：
+- `net0`（eth0/LAN）→ 接一个空桥/隔离网络（PVE 新建一个不绑物理口的桥即可）
+- `net1`（eth1/WAN，DHCP 客户端）→ 接需要上网的网络，自动从上级路由获取地址
 
-PVE 上临时给 vmbr9 加 IP 即可 SSH 进 192.168.1.1：`ip addr add 192.168.1.250/24 dev vmbr9`
+在宿主机给隔离桥临时加个同网段 IP，即可 SSH/Browser 访问 192.168.1.1 完成初始配置，改好 LAN 地址后再按需迁移网络。
 
-想在主网直接 SSH 该设备的 WAN 地址，需放行 WAN 入站：
+想在上级网络直接 SSH 该设备的 WAN 地址，需放行 WAN 入站：
 
 ```
 uci add firewall rule; uci set firewall.@rule[-1].name='allow-wan-ssh'
