@@ -50,19 +50,12 @@ opkg update
 **包含**：
 - LuCI 全家 + **Argon 主题** + argon-config（全中文）
 - **Docker** + docker-compose + **dockerman 网页管理**（中文）
-- **xray-core**（建节点用，helloworld feed）
+- **xray-core** 核心（科学上网前端自选）
 - 磁盘/运维工具：bash curl jq socat rsyslog smartmontools parted fdisk e2fsprogs btrfs-progs 等
 - 驱动：x86（virtio/igb/igc/e1000/r8169/r8125/nvme）、R2S/R3S（RTL8152 USB 千兆）、H28K（r8169/r8125 2.5G）
-- lean 功能集：autocore / automount / default-settings / ipv6helper
 - PPPoE / IPv6 全支持
 
-**不包含**（刻意精简）：
-- passwall2 等科学上网前端（只带 xray-core 核心，前端自选；xray-core 出自 helloworld feed——LEDE 默认启用的科学上网包合集源，distfeeds 中官方源的 helloworld 条目并不存在，已在镜像内清理）
-- fail2ban（LEDE 源无此包且 python 构建框架不兼容，装好系统后离线搬 ipk 即可，纯 python 跨发行版可跑）
-- ddns / acme（按需 docker 部署，如 ddns-go 容器）
-- 任何预烧网络配置
-
-**初始状态**：LAN `192.168.1.1`（静态，eth0），root 密码为空，首登 LuCI 或 SSH 后自行设置。
+**初始状态**：LAN `192.168.1.1`（静态，eth0），root 密码为空，首登 LuCI 或 SSH 后自行设置。无任何预烧配置。
 
 ## 软件安装（opkg）
 
@@ -83,9 +76,9 @@ opkg update && opkg install <包名>
 ## 如何编译
 
 - **push 到 main** → 自动编译 x86（日常迭代用）
-- **手动全编** → Actions → Build OpenWrt → Run workflow → `devices` 填：
-  - 单台：`x86` / `r2s` / `r3s` / `h28k`
-  - 四台并行：`all`
+- **手动编译** → Actions → Build OpenWrt → Run workflow → `devices` 填：
+  - 单台：`x86` / `r2s` / `r3s` / `h28k`（LEDE 版），或 `x86-imm` / `r2s-imm` / `r3s-imm`（ImmortalWrt 版）
+  - 全部七台并行：`all`
 - **只推代码不编译** → 提交信息带 `[skip ci]`
 - 编译产物自动发布到 Releases（每设备一个 Release，含 sha256sums 校验与 manifest 包清单）
 - toolchain 已缓存（按设备分 key），日常重编约 1 小时；首编/缓存失效约 3 小时
